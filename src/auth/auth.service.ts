@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dtos/login.dto';
 import { UnauthorizedException } from '../shared/exceptions';
 import { UserRepository } from './repositories/user.repository';
 import { User } from './entities/user.entity';
+import { IUserRepository } from './interfaces/user-repository.interface';
 
 export interface AuthResult {
   access_token: string;
@@ -22,7 +23,8 @@ export interface AuthResult {
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private userRepository: UserRepository,
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
   ) {}
 
   async validateUser(username: string, password: string): Promise<User | null> {

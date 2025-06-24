@@ -1,18 +1,22 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { OnModuleInit } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { UserRole } from '../entities/user.entity';
+import { IUserSeederService } from '../interfaces/user-seeder-service.interface';
+import { IUserRepository } from '../interfaces/user-repository.interface';
 
 @Injectable()
-export class UserSeederService implements OnModuleInit {
+export class UserSeederService implements IUserSeederService {
+
   private readonly logger = new Logger(UserSeederService.name);
 
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(@Inject("IUserRepository") private readonly userRepository: IUserRepository) {}
 
-  async onModuleInit() {
+  async onModuleInit(): Promise<void> {
     await this.seedDefaultUsers();
   }
 
-  private async seedDefaultUsers() {
+  private async seedDefaultUsers(): Promise<void> {
     try {
       await this.createDefaultUserIfNotExists({
         username: 'admin',
@@ -45,9 +49,9 @@ export class UserSeederService implements OnModuleInit {
     firstName: string;
     lastName: string;
     role: UserRole;
-  }) {
+  }): Promise<void> {
     const userExists = await this.userRepository.userExists(userData.username);
-    
+
     if (!userExists) {
       await this.userRepository.createUser(userData);
       this.logger.log(`Created default ${userData.role} user: ${userData.username}`);

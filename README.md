@@ -129,6 +129,7 @@ The system automatically creates default users on startup:
 - Headers: `Authorization: Bearer <token>`
 - Parameters: `id` (UUID)
 - Response: 204 No Content
+- Allowed Roles: ADMIN
 
 ## Task Schema
 

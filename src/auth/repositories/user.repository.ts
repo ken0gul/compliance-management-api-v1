@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from '../entities/user.entity';
 import * as bcrypt from 'bcryptjs';
+import { IUserRepository } from '../interfaces/user-repository.interface';
 
 @Injectable()
-export class UserRepository {
+export class UserRepository implements IUserRepository {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,

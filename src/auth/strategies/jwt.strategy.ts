@@ -1,9 +1,10 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserRepository } from '../repositories/user.repository';
 import { UnauthorizedException } from '../../shared/exceptions';
+import { IUserRepository } from '../interfaces/user-repository.interface';
 
 export interface JwtPayload {
   sub: string;
@@ -17,7 +18,8 @@ export interface JwtPayload {
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private configService: ConfigService,
-    private userRepository: UserRepository,
+     @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

@@ -1,5 +1,5 @@
-import { Controller, Post, Body, HttpStatus, Get, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Post, Body, HttpStatus, Get, UseGuards, Inject } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse as SwaggerApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService, AuthResult } from './auth.service';
 import { LoginDto } from './dtos/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -7,19 +7,22 @@ import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { UserRole } from './entities/user.entity';
 import { UserRepository } from './repositories/user.repository';
+import { ApiResponse } from '../shared/responses/api-response';
+import { IUserRepository } from './interfaces/user-repository.interface';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userRepository: UserRepository,
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
   ) {}
 
   @Post('login')
   @ApiOperation({ summary: 'User login' })
   @ApiBody({ type: LoginDto })
-  @ApiResponse({
+  @SwaggerApiResponse({
     status: HttpStatus.OK,
     description: 'User successfully authenticated',
     schema: {
@@ -44,12 +47,13 @@ export class AuthController {
       },
     },
   })
-  @ApiResponse({
+  @SwaggerApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     description: 'Invalid credentials',
   })
-  async login(@Body() loginDto: LoginDto): Promise<AuthResult> {
-    return await this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginDto): Promise<ApiResponse<AuthResult>> {
+    const authResult = await this.authService.login(loginDto);
+    return ApiResponse.success('User authenticated successfully', authResult);
   }
 
   @Get('users')
@@ -57,7 +61,7 @@ export class AuthController {
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth("JWT-auth")
   @ApiOperation({ summary: 'Get all users (Admin only)' })
-  @ApiResponse({
+  @SwaggerApiResponse({
     status: HttpStatus.OK,
     description: 'List of all users retrieved successfully',
     schema: {
@@ -78,15 +82,16 @@ export class AuthController {
       },
     },
   })
-  @ApiResponse({
+  @SwaggerApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     description: 'Unauthorized access',
   })
-  @ApiResponse({
+  @SwaggerApiResponse({
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden - Admin role required',
   })
-  async getAllUsers() {
-    return await this.userRepository.getAllUsers();
+  async getAllUsers(): Promise<ApiResponse<any[]>> {
+    const users = await this.userRepository.getAllUsers();
+    return ApiResponse.success('Users retrieved successfully', users);
   }
 }

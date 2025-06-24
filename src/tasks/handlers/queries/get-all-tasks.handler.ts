@@ -10,6 +10,10 @@ export class GetAllTasksHandler implements IQueryHandler<GetAllTasksQuery> {
   constructor(private readonly taskRepository: TaskRepository) {}
 
   async execute(query: GetAllTasksQuery): Promise<Task[]> {
-    return await this.taskRepository.findAll(query.framework, query.category);
+    var tasks = await this.taskRepository.findAll(query.framework, query.category);
+    if (!tasks || tasks.length === 0) {
+      throw new Error('No tasks found');
+    }
+    return tasks;
   }
 }

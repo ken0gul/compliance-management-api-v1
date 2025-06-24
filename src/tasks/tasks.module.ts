@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CqrsModule } from '@nestjs/cqrs';
+
 import { TasksController } from './controllers/tasks.controller';
-import { TaskDomainService } from './services/task-domain.service';
-import { TaskRepository } from './repo/task.repository';
 import { Task } from './entities/task.entity';
+import { TaskRepository } from './repo/task.repository';
+
+import { TaskDomainService } from './services/task-domain.service';
+import { ITaskDomainService } from './interfaces/task-domain-service.interface';
 
 import { CreateTaskHandler } from './handlers/commands/create-task.handler';
 import { UpdateTaskHandler } from './handlers/commands/update-task.handler';
@@ -31,11 +34,14 @@ const queryHandlers = [
   ],
   controllers: [TasksController],
   providers: [
-    TaskDomainService,
+    {
+      provide: 'ITaskDomainService',
+      useClass: TaskDomainService,
+    },
     TaskRepository,
     ...commandHandlers,
     ...queryHandlers,
   ],
-  exports: [TaskDomainService],
+  exports: ['ITaskDomainService'],
 })
 export class TasksModule {}

@@ -9,9 +9,10 @@ import { CreateTaskDto } from '../dtos/create-task.dto';
 import { UpdateTaskDto } from '../dtos/update-task.dto';
 import { Task } from '../entities/task.entity';
 import { GetAllTasksQuery, GetTaskByIdQuery } from '../queries/queries';
+import { ITaskDomainService } from '../interfaces/task-domain-service.interface';
 
 @Injectable()
-export class TaskDomainService {
+export class TaskDomainService implements ITaskDomainService {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,

@@ -3,12 +3,15 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { setupSwagger } from './docs/swagger';
+import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
+import { GlobalExceptionFilter } from './shared/filters/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
 
+  // Global pipes
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -19,6 +22,10 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.useGlobalInterceptors(new ResponseInterceptor());
+
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // CORS
   app.enableCors({
