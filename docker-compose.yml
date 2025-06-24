@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: compliance_management_db
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: admin_password1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - compliance-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USERNAME=admin_user
+      - DATABASE_PASSWORD=admin_password1234
+      - DATABASE_NAME=compliance_management_db
+      - JWT_SECRET=s3cR3t!@#Z8vWmL2qXnA9bR$Tp1YgJc7Ku0fD
+      - JWT_EXPIRES_IN=24h
+    depends_on:
+      - postgres
+    networks:
+      - compliance-network
+    volumes:
+      # - .:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
+
+networks:
+  compliance-network:
+    driver: bridge
