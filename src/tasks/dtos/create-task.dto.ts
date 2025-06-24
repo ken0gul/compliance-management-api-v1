@@ -5,7 +5,7 @@ import { TaskStatus } from '../entities/task.entity';
 export class CreateTaskDto {
   @ApiProperty({
     description: 'Task name',
-    example: 'Implement access control review',
+    example: 'Implement access control review for an enterprise-grade compliance management system',
     maxLength: 255,
   })
   @IsString()
