@@ -74,17 +74,66 @@ The system automatically creates default users on startup:
 
 ## API Endpoints
 
+### BASE API URL
+- /api/v1
+
 ### Authentication
 
 **POST /auth/login**
 - Description: Authenticate user and receive JWT token
 - Body: `{ "username": "admin", "password": "admin123" }`
-- Response: `{ "access_token": "jwt_token", "user": {...} }`
+- Response: 
+  ```json
+  {
+    "success": true,
+    "message": "User authenticated successfully",
+    "data": {
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "user": {
+        "id": "123e4567-e89b-12d3-a456-426614174000",
+        "username": "admin",
+        "email": "admin@compliance.com",
+        "firstName": "System",
+        "lastName": "Administrator",
+        "role": "admin"
+      }
+    },
+    "meta": {
+      "timestamp": "2025-06-25T10:00:00.000Z",
+      "path": "/api/v1/auth/login",
+      "method": "POST"
+    }
+  }
+  ```
 
 **GET /auth/users** (Admin only)
 - Description: Get all users in the system
 - Headers: `Authorization: Bearer <token>`
-- Response: Array of user objects
+- Response: 
+  ```json
+  {
+    "success": true,
+    "message": "Users retrieved successfully",
+    "data": [
+      {
+        "id": "123e4567-e89b-12d3-a456-426614174000",
+        "username": "admin",
+        "email": "admin@compliance.com",
+        "firstName": "System",
+        "lastName": "Administrator",
+        "role": "admin",
+        "isActive": true,
+        "createdAt": "2025-06-24T22:33:28.000Z",
+        "updatedAt": "2025-06-24T22:33:28.000Z"
+      }
+    ],
+    "meta": {
+      "timestamp": "2025-06-25T10:00:00.000Z",
+      "path": "/api/v1/auth/users",
+      "method": "GET"
+    }
+  }
+  ```
 
 ### Tasks
 
@@ -94,13 +143,57 @@ The system automatically creates default users on startup:
 - Query Parameters:
   - `framework` (optional): Filter by compliance framework
   - `category` (optional): Filter by task category
-- Response: Array of task objects
+- Response: 
+  ```json
+  {
+    "success": true,
+    "message": "Tasks retrieved successfully",
+    "data": [
+      {
+        "id": "123e4567-e89b-12d3-a456-426614174000",
+        "name": "Implement access control review",
+        "description": "Review and update access control policies",
+        "framework": "DSALTA",
+        "category": "Access Control",
+        "status": "open",
+        "createdAt": "2025-06-25T10:00:00.000Z",
+        "updatedAt": "2025-06-25T10:00:00.000Z"
+      }
+    ],
+    "meta": {
+      "timestamp": "2025-06-25T10:00:00.000Z",
+      "path": "/api/v1/tasks",
+      "method": "GET"
+    }
+  }
+  ```
 
 **GET /tasks/:id**
 - Description: Get a specific task by ID
 - Headers: `Authorization: Bearer <token>`
 - Parameters: `id` (UUID)
-- Response: Task object
+- Response: 
+  ```json
+  {
+    "success": true,
+    "message": "Task retrieved successfully",
+    "data": {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "Implement access control review",
+      "description": "Review and update access control policies",
+      "framework": "DSALTA",
+      "category": "Access Control",
+      "status": "open",
+      "createdAt": "2025-06-25T10:00:00.000Z",
+      "updatedAt": "2025-06-25T10:00:00.000Z"
+    },
+    "meta": {
+      "timestamp": "2025-06-25T10:00:00.000Z",
+      "path": "/api/v1/tasks/123e4567-e89b-12d3-a456-426614174000",
+      "method": "GET"
+    }
+  }
+  ```
 
 **POST /tasks**
 - Description: Create a new compliance task
@@ -115,20 +208,74 @@ The system automatically creates default users on startup:
     "status": "open"
   }
   ```
-- Response: Created task object
+- Response: 
+  ```json
+  {
+    "success": true,
+    "message": "Task created successfully",
+    "data": {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "Implement access control review for an enterprise-grade compliance management system",
+      "description": "Review and update access control policies",
+      "framework": "DSALTA",
+      "category": "Access Control",
+      "status": "open",
+      "createdAt": "2025-06-25T10:00:00.000Z",
+      "updatedAt": "2025-06-25T10:00:00.000Z"
+    },
+    "meta": {
+      "timestamp": "2025-06-25T10:00:00.000Z",
+      "path": "/api/v1/tasks",
+      "method": "POST"
+    }
+  }
+  ```
 
 **PUT /tasks/:id**
 - Description: Update an existing task
 - Headers: `Authorization: Bearer <token>`
 - Parameters: `id` (UUID)
 - Body: Partial task object with fields to update
-- Response: Updated task object
+- Response: 
+  ```json
+  {
+    "success": true,
+    "message": "Task updated successfully",
+    "data": {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "Updated task name",
+      "description": "Updated description",
+      "framework": "DSALTA",
+      "category": "Access Control",
+      "status": "in_progress",
+      "createdAt": "2025-06-25T10:00:00.000Z",
+      "updatedAt": "2025-06-25T11:00:00.000Z"
+    },
+    "meta": {
+      "timestamp": "2025-06-25T11:00:00.000Z",
+      "path": "/api/v1/tasks/123e4567-e89b-12d3-a456-426614174000",
+      "method": "PUT"
+    }
+  }
+  ```
 
 **DELETE /tasks/:id**
 - Description: Delete a task
 - Headers: `Authorization: Bearer <token>`
 - Parameters: `id` (UUID)
-- Response: 204 No Content
+- Response: 
+  ```json
+  {
+    "success": true,
+    "message": "Task deleted successfully",
+    "data": null,
+    "meta": {
+      "timestamp": "2025-06-25T10:00:00.000Z",
+      "path": "/api/v1/tasks/123e4567-e89b-12d3-a456-426614174000",
+      "method": "DELETE"
+    }
+  }
+  ```
 - Allowed Roles: ADMIN
 
 ## Task Schema
@@ -218,6 +365,8 @@ The Swagger interface provides:
 - Complete endpoint documentation
 
 ## Project Structure
+
+- Clean architecture with CQRS Mediatr pattern
 
 ```
 src/
